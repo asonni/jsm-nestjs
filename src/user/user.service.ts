@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { LoggerService } from './user.logger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,7 +18,7 @@ export class UserService {
     { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
   ];
 
-  findAllUsers(name: string = ''): User[] {
+  findAllUsers(name: string = '') {
     this.logger.log('Fetching all users');
 
     return this.users.filter((user) =>
@@ -26,38 +26,48 @@ export class UserService {
     );
   }
 
-  findUserById(id: number): User | undefined {
-    this.logger.log(`Fetching user with ID: ${id}`);
-    return this.users.find((user) => user.id === id);
+  findUserById(id: number) {
+    const user = this.users.find((user) => user.id === id);
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
-  createUser(user: CreateUserDto): CreateUserDto & { id: number } {
+  createUser(user: CreateUserDto) {
     this.logger.log('Creating a new user');
     const newUser = { ...user, id: this.users.length + 1 };
     this.users.push(newUser);
     return newUser;
   }
 
-  updateUser(
-    id: number,
-    updatedUser: Partial<UpdateUserDto>,
-  ): UpdateUserDto | undefined {
+  updateUser(id: number, updatedUser: Partial<UpdateUserDto>) {
     this.logger.log(`Updating user with ID: ${id}`);
+
     const userIndex = this.users.findIndex((user) => user.id === id);
+
     if (userIndex === -1) {
       return undefined;
     }
+
     this.users[userIndex] = { ...this.users[userIndex], ...updatedUser };
+
     return this.users[userIndex];
   }
 
-  deleteUser(id: number): User | null {
+  deleteUser(id: number) {
     this.logger.log(`Deleting user with ID: ${id}`);
+
     const userIndex = this.users.findIndex((user) => user.id === id);
+
     if (userIndex === -1) {
       return null;
     }
+
     const [deleted] = this.users.splice(userIndex, 1);
+
     return deleted;
   }
 }
