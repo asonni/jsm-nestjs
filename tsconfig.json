@@ -2,9 +2,9 @@
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "resolvePackageJsonExports": true,
+    // "resolvePackageJsonExports": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
+    // "isolatedModules": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
